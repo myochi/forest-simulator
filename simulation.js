@@ -28,12 +28,16 @@ function getGridSize(str){
     
 }
 
-function getCases(str){
+function getCases(str, h, w){
     let resCases = [];
     let cases = str.match(/\(\d+,\d+\)/g);
     if (cases.length < 1)
     {
         throw new Error("No case were found. You must provide one case parameter.")
+    }
+    if (cases.length > h * w)
+    {
+        throw new Error("There are too much cases for the grid's size.")
     }
     for (let i = 0; i < cases.length; i++)
     {
@@ -44,9 +48,17 @@ function getCases(str){
         }
         else
         {
-            resCases.push(new Case("burning", Number(coords[0]), Number(coords[1])))
+            let x = Number(coords[0])
+            let y = Number(coords[1])
+            if (x >= 0 && x < h && y >= 0 && y < w )
+                resCases.push(new Case("burning", x, y))
+            else
+            {
+                throw new Error("X & Y aren't in grid's dimension's range.")
+            }
         }
     }
+
     return resCases;
 }
 
@@ -69,7 +81,7 @@ function parseConfig() {
     }
     let gridParams = getGridSize(parameters[0])
     let proba = getProba(parameters[1])
-    let cases = getCases(parameters[2])
+    let cases = getCases(parameters[2], gridParams.h, gridParams.w)
     return {"proba": proba, "grid": new Grid(gridParams.h, gridParams.w, cases)}
 }
 
